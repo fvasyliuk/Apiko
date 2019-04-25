@@ -1,26 +1,73 @@
 import React from 'react';
-import logo from './logo.svg';
+import PostList from './components/PostList';
+import MoreButton from './components/MoreButton';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+class App extends React.Component {
+
+
+  constructor(){
+    super();
+    this.state={ 
+      posts: [], 
+      counter: 0,
+      search: '',
+      isLoader: true,
+    }
+    this.handleButtonClick = this.handleButtonClick.bind(this);
+    this.handleOnChange = this.handleOnChange.bind(this);    
+  }
+  
+
+  handleButtonClick(){
+    this.setState((state)=>({
+      ...state,
+      counter: state.counter + 1
+    }))
+  }
+  handleOnChange(event){
+    const search = event.target.value;
+    this.setState((state)=>({
+      ...state,
+      counter: 1,
+      search,
+    }))
+  }
+
+  componentDidMount(){
+    fetch('https://jsonplaceholder.typicode.com/posts')
+      .then(res => res.json() )
+      .then(json => this.setState({
+        posts: json, 
+        counter: 1,
+        isLoader:false,
+      }))
+  }
+
+  render(){
+    if (this.state.isLoader){
+      return <h2>Loader...</h2>
+    }    
+
+    const search= this.state.search.toUpperCase()
+    let postsList;
+
+    search
+      ? postsList = this.state.posts.filter(item => 
+        item.title.toUpperCase().includes(search) 
+        || item.body.toUpperCase().includes(search)
+      ).slice(0, 10*this.state.counter)
+      : postsList = this.state.posts.slice(0, 10*this.state.counter)
+    
+    return (
+      <div className="App">
+        <input placeholder='search' onChange={this.handleOnChange} />
+        <PostList posts= {postsList}/>
+        <MoreButton onClick={this.handleButtonClick}/>
+      </div>
+    );
+  }
+  
+} 
 
 export default App;
