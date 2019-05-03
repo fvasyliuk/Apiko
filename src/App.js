@@ -52,12 +52,12 @@ class App extends React.Component {
     const search= this.state.search.toUpperCase()
     let postsList;
 
-    search
-      ? postsList = this.state.posts.filter(item => 
-        item.title.toUpperCase().includes(search) 
-        || item.body.toUpperCase().includes(search)
+    if (search){
+      postsList = this.state.posts.filter(item => 
+      item.title.toUpperCase().includes(search) 
+      || item.body.toUpperCase().includes(search)
       ).slice(0, 10*this.state.counter)
-      : postsList = this.state.posts.slice(0, 10*this.state.counter)
+    } else { postsList = this.state.posts.slice(0, 10*this.state.counter)}
     
     return (
       <div className="App">
